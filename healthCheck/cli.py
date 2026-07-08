@@ -8,6 +8,7 @@ from healthCheck.checks.cpu import check_cpu
 from healthCheck.checks.memory import check_memory
 from healthCheck.checks.disk import check_disk
 from healthCheck.checks.uptime import check_uptime
+from healthCheck.status import calculate_global_status, get_exit_code
 
 
 app = typer.Typer(help="System Health Automation CLI")
@@ -16,38 +17,11 @@ console = Console()
 
 @app.callback()
 def main():
- 
     pass
-
-
-def calculate_global_status(checks):
-    statuses = [check["status"] for check in checks]
-
-    if "CRITICAL" in statuses:
-        return "CRITICAL"
-
-    if "WARNING" in statuses:
-        return "WARNING"
-
-    return "OK"
-
-
-def get_exit_code(status):
-    if status == "OK":
-        return 0
-
-    if status == "WARNING":
-        return 1
-
-    if status == "CRITICAL":
-        return 2
-
-    return 3
 
 
 @app.command()
 def local():
- 
 
     checks = [
         check_cpu(),
