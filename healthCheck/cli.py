@@ -3,6 +3,8 @@ import sys
 from pathlib import Path
 from typing import Optional
 
+from healthCheck.logger import setup_logger
+
 import typer
 from rich.console import Console
 from rich.table import Table
@@ -18,13 +20,11 @@ from healthCheck.status import calculate_global_status, get_exit_code
 
 app = typer.Typer(help="System Health Automation CLI")
 console = Console()
-
+logger = setup_logger()
 
 @app.callback()
 def main():
-    """
-    System Health Automation CLI.
-    """
+  
     pass
 
 
@@ -82,12 +82,27 @@ def local(
         help="Output file path for json/csv export"
     )
 ):
+    
+    
     """
     Run local system health check.
     """
-
+    logger.info("Starting local system health check")
+    
     report = build_report()
-
+    
+    logger.info("Health check completed with status: %s", report["status"])
+    
+    
+    for check in report["checks"]:
+        logger.info(
+            "%s check result: value=%s%s status=%s",
+            check["name"],
+            check["value"],
+            check["unit"],
+            check["status"]
+        )
+    
     if output_format == "table":
         print_table(report)
 
