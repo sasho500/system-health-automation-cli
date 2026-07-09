@@ -3,12 +3,12 @@ import sys
 from pathlib import Path
 from typing import Optional
 
-from healthCheck.logger import setup_logger
 
 import typer
 from rich.console import Console
 from rich.table import Table
 
+from healthCheck.logger import setup_logger
 from healthCheck.checks.cpu import check_cpu
 from healthCheck.checks.memory import check_memory
 from healthCheck.checks.disk import check_disk
@@ -16,7 +16,7 @@ from healthCheck.checks.uptime import check_uptime
 from healthCheck.exporters.csv_exporter import export_csv
 from healthCheck.exporters.json_exporter import export_json
 from healthCheck.status import calculate_global_status, get_exit_code
-
+from healthCheck.checks.ports import check_ports
 
 app = typer.Typer(help="System Health Automation CLI")
 console = Console()
@@ -125,6 +125,53 @@ def local(
         sys.exit(3)
 
     sys.exit(get_exit_code(report["status"]))
+
+@app.command()
+def ports(
+    port_list: str = typer.Option(
+        ...,
+        "--ports",
+        "-p",
+        help="Comma-separated list of ports to check. Example: 22,80,443,8081"
+    ),
+    host: str = typer.Option(
+        "127.0.0.1",
+        "--host",
+        "-h",
+        help="Host to check ports on"
+    )
+):
+   
+    logger.info("Starting port check for host: %s", host)
+
+    try:
+        parsed_ports = [
+            int(port.strip())
+            for port in port_list.split(",")
+            if port.strip()
+        ]
+    except ValueError:
+        logger.error("Invalid port list: %s", port_list)
+        console.print("[red]Invalid port list. Use format like: 22,80,443,8081[/red]")
+        sys.exit(3)
+
+    report = check_ports(host, parsed_ports)
+
+    logger.info("Port check completed with status: %s", report["status"])
+
+    for check in report["checks"]:
+        logger.info(
+            "%s result: value=%s status=%s",
+            check["name"],
+            check["value"],
+            check["status"]
+        )
+
+    print_table(report)
+
+    sys.exit(get_exit_code(report["status"]))
+
+
 
 
 if __name__ == "__main__":
