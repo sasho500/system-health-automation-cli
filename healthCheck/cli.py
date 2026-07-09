@@ -18,6 +18,7 @@ from healthCheck.exporters.json_exporter import export_json
 from healthCheck.status import calculate_global_status, get_exit_code
 from healthCheck.checks.ports import check_ports
 from healthCheck.checks.services import check_services
+from healthCheck.config import get_thresholds, load_config
 
 app = typer.Typer(help="System Health Automation CLI")
 console = Console()
@@ -25,15 +26,27 @@ logger = setup_logger()
 
 @app.callback()
 def main():
-  
     pass
 
 
-def build_report():
+def build_report(config):
+    cpu_warning, cpu_critical = get_thresholds(config, "cpu")
+    memory_warning, memory_critical = get_thresholds(config, "memory")
+    disk_warning, disk_critical = get_thresholds(config, "disk")
+
     checks = [
-        check_cpu(),
-        check_memory(),
-        check_disk(),
+        check_cpu(
+            warning=cpu_warning,
+            critical=cpu_critical,
+        ),
+        check_memory(
+            warning=memory_warning,
+            critical=memory_critical,
+        ),
+        check_disk(
+            warning=disk_warning,
+            critical=disk_critical,
+        ),
         check_uptime(),
     ]
 
@@ -42,7 +55,7 @@ def build_report():
     return {
         "host": socket.gethostname(),
         "status": global_status,
-        "checks": checks
+        "checks": checks,
     }
 
 
@@ -81,7 +94,13 @@ def local(
         "--output",
         "-o",
         help="Output file path for json/csv export"
-    )
+    ),
+    config_file: Path = typer.Option(
+        Path("config.yaml"),
+        "--config",
+        "-c",
+        help="Path to YAML config file",
+    ),
 ):
     
     
@@ -90,7 +109,10 @@ def local(
     """
     logger.info("Starting local system health check")
     
-    report = build_report()
+    config = load_config(config_file)
+    logger.info("Loaded config from: %s", config_file)
+
+    report = build_report(config)
     
     logger.info("Health check completed with status: %s", report["status"])
     

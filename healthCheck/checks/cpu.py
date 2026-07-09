@@ -1,13 +1,21 @@
 import psutil
+
 from healthCheck.status import get_status
 
-def check_cpu():
+
+def check_cpu(warning=80, critical=90):
     usage = psutil.cpu_percent(interval=1)
-    
+
     status = get_status(
         value=usage,
-        warning=80,
-        critical=90
+        warning=warning,
+        critical=critical,
     )
 
-    return {"name":"CPU","value": usage, "status": status, "unit": "%", "message": f"CPU usage is at {usage}%."}
+    return {
+        "name": "CPU",
+        "value": usage,
+        "unit": "%",
+        "status": status,
+        "message": f"CPU usage is {usage}%",
+    }

@@ -1,16 +1,22 @@
 import psutil
+
 from healthCheck.status import get_status
 
 
-def check_memory():
+def check_memory(warning=80, critical=90):
     memory = psutil.virtual_memory()
     usage = memory.percent
-    
+
     status = get_status(
         value=usage,
-        warning=80,
-        critical=90
+        warning=warning,
+        critical=critical,
     )
 
-    return {"name": "Memory", "value": usage, "status": status, "unit": "%", "message": f"Memory usage is at {usage}%."}
-
+    return {
+        "name": "Memory",
+        "value": usage,
+        "unit": "%",
+        "status": status,
+        "message": f"Memory usage is {usage}%",
+    }
