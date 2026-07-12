@@ -26,9 +26,21 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Check CLI help
+        run: |
+          python -m healthCheck.cli --help
+
       - name: Run local health check
         run: |
           python -m healthCheck.cli local || true
+
+      - name: Run JSON export
+        run: |
+          python -m healthCheck.cli local --format json || true
+
+      - name: Run CSV export
+        run: |
+          python -m healthCheck.cli local --format csv || true
 
       - name: Run port check
         run: |
