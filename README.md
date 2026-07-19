@@ -140,6 +140,42 @@ source .venv/bin/activate
 Install dependencies:
 
 pip install -r requirements.txt
+
+🐳 Docker Usage
+
+This project can also be run inside a Docker container.
+
+Build the Docker image:
+
+docker build -t system-health-cli .
+
+Show the CLI help menu:
+
+docker run --rm system-health-cli --help
+
+Run a local health check inside the container:
+
+docker run --rm system-health-cli local
+
+Run a port check:
+
+docker run --rm system-health-cli ports --ports 22,80,443
+
+Run a service/process check:
+
+docker run --rm system-health-cli services --names python
+
+Export a JSON report and keep it on the host machine:
+
+mkdir reports
+docker run --rm -v ${PWD}/reports:/app/reports system-health-cli local --format json
+
+Save logs on the host machine:
+
+mkdir logs
+docker run --rm -v ${PWD}/logs:/app/logs system-health-cli local
+
+
 ▶️ Usage
 
 Run the local system health check:
