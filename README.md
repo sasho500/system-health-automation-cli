@@ -25,18 +25,6 @@ Run a local health check:
 
 python -m healthcheck.cli local
 
-Example output:
-
-              System Health Check
-┏━━━━━━━━┳━━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━┓
-┃ Check  ┃ Value    ┃ Status  ┃ Message              ┃
-┡━━━━━━━━╇━━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━┩
-│ CPU    │ 24.5%    │ OK      │ CPU usage is 24.5%   │
-│ Memory │ 63.2%    │ OK      │ Memory usage is 63.2%│
-│ Disk   │ 71.0%    │ OK      │ Disk usage is 71.0%  │
-│ Uptime │ 5:12:40  │ OK      │ System uptime is ... │
-└────────┴──────────┴─────────┴──────────────────────┘
-
 Global status: OK
     How it works
 
