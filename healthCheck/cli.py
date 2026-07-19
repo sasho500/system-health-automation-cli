@@ -16,6 +16,7 @@ from healthCheck.checks.disk import check_disk
 from healthCheck.checks.uptime import check_uptime
 from healthCheck.exporters.csv_exporter import export_csv
 from healthCheck.exporters.json_exporter import export_json
+from healthCheck.alerts import send_alert_if_needed
 from healthCheck.status import calculate_global_status, get_exit_code
 from healthCheck.checks.ports import check_ports
 from healthCheck.checks.services import check_services
@@ -102,6 +103,12 @@ def local(
         "-c",
         help="Path to YAML config file",
     ),
+    alert: Optional[str] = typer.Option(
+        None,
+        "--alert",
+        "-a",
+        help="Alert provider: telegram",
+    ),
 ):
     
     
@@ -148,8 +155,32 @@ def local(
         console.print(f"[red]Unsupported format:[/red] {output_format}")
         sys.exit(3)
 
-    sys.exit(get_exit_code(report["status"]))
 
+
+    try:
+        alert_sent = send_alert_if_needed(report, alert)
+
+        if alert and alert_sent:
+            logger.info("Alert sent successfully using provider: %s", alert)
+            console.print(f"[green]Alert sent successfully using provider:[/green] {alert}")
+
+        elif alert and not alert_sent:
+            logger.info("No alert sent because global status is OK")
+            console.print("[yellow]No alert sent because global status is OK[/yellow]")
+
+    except ValueError as error:
+        logger.error("Alert error: %s", error)
+        console.print(f"[red]Alert error:[/red] {error}")
+        sys.exit(3)
+
+    except Exception as error:
+        logger.exception("Failed to send alert")
+        console.print(f"[red]Failed to send alert:[/red] {error}")
+        sys.exit(3)
+        
+    sys.exit(get_exit_code(report["status"]))
+    
+    
 @app.command()
 def ports(
     port_list: str = typer.Option(

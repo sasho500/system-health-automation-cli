@@ -1,12 +1,25 @@
+# thresholds:
+#   cpu:
+#     warning: 80
+#     critical: 90
+
+#   memory:
+#     warning: 80
+#     critical: 90
+
+#   disk:
+#     warning: 85
+#     critical: 95
+
 thresholds:
   cpu:
-    warning: 80
-    critical: 90
+    warning: 1
+    critical: 3
 
   memory:
-    warning: 80
-    critical: 90
+    warning: 1
+    critical: 3
 
   disk:
-    warning: 85
-    critical: 95
+    warning: 1
+    critical: 3
