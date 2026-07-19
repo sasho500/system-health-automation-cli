@@ -10,7 +10,6 @@ def get_status(value, warning, critical):
 
 
 def calculate_global_status(checks):
-
     statuses = [check["status"] for check in checks]
 
     if "CRITICAL" in statuses:
@@ -18,6 +17,9 @@ def calculate_global_status(checks):
 
     if "WARNING" in statuses:
         return "WARNING"
+
+    if "UNKNOWN" in statuses:
+        return "UNKNOWN"
 
     return "OK"
 
