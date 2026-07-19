@@ -228,6 +228,12 @@ cron jobs
 CI/CD health validation
 learning Python automation
 building a portfolio project for DevOps or automation roles
+
+
+## Version
+
+Current version: `0.1.0`
+
 📄 License
 
 This project is licensed under the MIT License.

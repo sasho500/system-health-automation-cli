@@ -7,6 +7,7 @@ from typing import Optional
 import typer
 from rich.console import Console
 from rich.table import Table
+from healthCheck import __version__
 
 from healthCheck.logger import setup_logger
 from healthCheck.checks.cpu import check_cpu
@@ -239,6 +240,14 @@ def services(
     print_table(report)
 
     sys.exit(get_exit_code(report["status"]))
+@app.command()
+def version():
+    """
+    Show the current CLI version.
+    """
+
+    console.print(f"System Health Automation CLI version: [bold]{__version__}[/bold]")
+
 
 
 if __name__ == "__main__":
